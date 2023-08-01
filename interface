@@ -1,0 +1,105 @@
+<!DOCTYPE html> <!-- Tells the browser this is an HTML5 document -->
+<html>
+<head>
+  <!-- Importing jQuery UI Styles -->
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <!-- Importing jQuery Library -->
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <!-- Importing jQuery UI Library -->
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+</head>
+<body>
+  <!-- Define two buttons for switching control modes -->
+  <button id="manual">Manual</button>
+  <button id="auto">Auto</button>
+
+  <!-- Define the manual control interface, initially hidden -->
+  <div id="manual-controls" style="display:none">
+    <!-- Define a joystick, which users can drag to control the robot -->
+    <div id="joystick" style="width: 100px; height: 100px; background: #ccc;"></div>
+    <!-- Define a button for controlling the weed-cutting blade -->
+    <button id="blade">Blade Control</button>
+    <!-- Define a button to return to the main interface -->
+    <button id="esc-manual">ESC</button>
+  </div>
+
+  <!-- Define the automatic control interface, initially hidden -->
+  <div id="auto-controls" style="display:none">
+    <!-- Define a canvas where users can draw the robot's action path -->
+    <canvas id="path" width="500" height="500"></canvas>
+    <!-- Define a button for activating or pausing the robot -->
+    <button id="active">Active</button>
+    <!-- Define a button to return to the main interface -->
+    <button id="esc-auto">ESC</button>
+  </div>
+
+  <!-- Begin JavaScript code -->
+  <script>
+    $(function() {
+      // Make the joystick draggable
+      $("#joystick").draggable();
+
+      // When the Manual button is clicked, show the manual control interface and hide the automatic control interface
+      $("#manual").click(function() {
+        $("#manual-controls").show();
+        $("#auto-controls").hide();
+      });
+
+      // When the Auto button is clicked, show the automatic control interface and hide the manual control interface
+      $("#auto").click(function() {
+        $("#auto-controls").show();
+        $("#manual-controls").hide();
+      });
+
+      // When the return button of the manual control interface is clicked, hide the manual control interface
+      $("#esc-manual").click(function() {
+        $("#manual-controls").hide();
+      });
+
+      // When the return button of the automatic control interface is clicked, hide the automatic control interface
+      $("#esc-auto").click(function() {
+        $("#auto-controls").hide();
+      });
+
+      // Get the canvas object and its 2D rendering context
+      var canvas = document.getElementById("path");
+      var ctx = canvas.getContext("2d");
+
+      // Define a variable to mark whether it is drawing
+      var painting = false;
+
+      // When the mouse is pressed, start drawing and call the draw function to draw
+      canvas.addEventListener("mousedown", function(e) {
+        painting = true;
+        draw(e);
+      });
+
+      // When the mouse is released, stop drawing and clear the drawing path
+      canvas.addEventListener("mouseup", function() {
+        painting = false;
+        ctx.beginPath();
+      });
+
+      // When the mouse moves, call the draw function to draw
+      canvas.addEventListener("mousemove", draw);
+
+      // Define the draw function for drawing
+      function draw(e) {
+        // If not in the drawing state, return directly
+        if (!painting) return;
+        // Set the width, endpoint shape, and color of the line
+        ctx.lineWidth = 10;
+        ctx.lineCap = "round";
+        ctx.strokeStyle = "black";
+
+        // Extend the drawing path to the position of the mouse and perform drawing
+        ctx.lineTo(e.clientX, e.clientY);
+        ctx.stroke();
+        // Start a new drawing path and set the starting point to the position of the mouse
+        ctx.beginPath();
+        ctx.moveTo(e.clientX, e.clientY);
+      }
+    });
+  </script>
+</body>
+</html>
