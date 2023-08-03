@@ -1,0 +1,23 @@
+var ws = new WebSocket('ws://your_esp32_ip');
+
+ws.onopen = function() {
+  console.log('Connected');
+};
+
+ws.onmessage = function(evt) {
+  console.log(evt.data);
+};
+
+ws.onclose = function() {
+  console.log('Connection closed');
+};
+
+// When the joystick is moved, send the position to the ESP32
+$('#joystick').on('drag', function() {
+  var position = $(this).position();
+  var command = {
+    leftMotorSpeed: position.left,  // calculate the speed based on the position
+    rightMotorSpeed: position.top   // calculate the speed based on the position
+  };
+  ws.send(JSON.stringify(command));
+});
